@@ -3,260 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Михаил и Ирина – Наше Приглашение</title>
+    <title>Наше приглашение: Михаил и Ирина</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    
     <style>
+        /* ГЛОБАЛЬНЫЕ СТИЛИ И ПЕРЕМЕННЫЕ */
         :root {
-            --font-heading: 'Great Vibes', cursive; /* Из дизайна */
-            --font-body: 'Playfair Display', serif; /* Из дизайна */
-            --font-accent: 'Montserrat', sans-serif; /* Из дизайна */
-
-            /* Палитра в пастельных тонах + винный */
-            --color-text: #4F4A45; /* Темно-серый, почти черный */
-            --color-bg: #FDF6F0;    /* Очень светлый, теплый пастельно-бежевый */
+            --font-heading: 'Great Vibes', cursive;
+            --font-body: 'Playfair Display', serif;
+            --font-accent: 'Montserrat', sans-serif;
+            --color-text: #4F4A45;
+            --color-bg: #FDF6F0;
             --color-primary: #8D4B60; /* Винный */
             --color-secondary: #E8C7C8; /* Пастельно-розовый */
-            --color-highlight: #F5E1DA; /* Нежный пастельно-персиковый */
-            --color-accent-pastel-1: #D4E2D4; /* Пастельно-зеленый */
-            /* --color-accent-pastel-2: #BCCEF8; /* Пастельно-голубой - удален */
-            --color-accent-pastel-3: #FDEBF7; /* Пастельно-лавандовый */
-            --color-accent-pastel-4: #FFEFD5; /* Пастельно-желтый - добавлен */
+            --color-highlight: #F5E1DA;
+            --color-accent-pastel-1: #D4E2D4;
+            --color-accent-pastel-3: #FDEBF7;
+            --color-accent-pastel-4: #FFEFD5;
             --color-white: #ffffff;
-            --color-dark: #312020; /* Очень темный винный для контраста */
+            --color-dark: #312020;
 
             --section-padding: 60px 0;
             --container-max-width: 1100px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* СТИЛИ ДЛЯ ПРЕЛОАДЕРА И АНИМАЦИИ */
+        body.preloading {
+            overflow: hidden;
         }
 
-        body {
-            font-family: var(--font-accent); /* Montserrat для основного текста по умолчанию */
-            font-weight: 400;
-            color: var(--color-text);
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--color-bg);
-            line-height: 1.7;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
-
-        .container {
-            max-width: var(--container-max-width);
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Базовая анимация появления для секций */
-        .section {
-            padding: var(--section-padding);
-            min-height: 90vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 1s ease-out, transform 1s ease-out;
-            border-bottom: 1px dashed var(--color-highlight); /* Разделитель блоков */
-        }
-        .section:last-of-type {
-            border-bottom: none;
-        }
-
-        .section.is-visible {
+            z-index: 9999;
             opacity: 1;
-            transform: translateY(0);
+            visibility: visible;
+            transition: opacity 1.5s ease-out 0.5s, visibility 1.5s ease-out 0.5s;
+            overflow: hidden; /* Чтобы лепестки не выходили за пределы */
         }
 
-        .section-full-bg {
-            min-height: 100vh;
-            color: var(--color-white);
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed; /* Эффект параллакса */
+        #preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
-        .section-full-bg::before {
-            content: "";
+        .animation-container {
+            position: relative;
+            text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .animation-container.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* НОВАЯ АНИМАЦИЯ: Падающие лепестки */
+        .petal {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(40, 20, 20, 0.5); /* Затемнение с винным оттенком */
+            top: -50px; /* Начинают за экраном */
+            width: 20px;
+            height: 30px;
+            background-color: var(--color-secondary);
+            border-radius: 50% 0;
+            opacity: 0.7;
+            animation: fall-petal 10s linear infinite;
+            transform-origin: bottom center;
             z-index: 1;
         }
 
-        .section-content {
+        @keyframes fall-petal {
+            0% {
+                transform: translateY(0) rotateZ(0deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(110vh) rotateZ(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ИСПРАВЛЕНО: SVG Сердце */
+        .heart-svg {
+            width: 220px;
+            height: 220px;
+            display: block;
+            margin: 0 auto 30px auto;
             position: relative;
             z-index: 2;
-            max-width: 750px;
         }
 
-        .section-header {
-            font-family: var(--font-heading);
-            font-size: 4.8rem; /* Крупнее */
-            font-weight: normal;
-            color: var(--color-primary);
-            margin-bottom: 25px;
-            line-height: 1.1;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        #heart-path {
+            stroke: var(--color-primary);
+            stroke-width: 1.5; /* Сделал контур еще тоньше для изящности */
+            fill: transparent;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 85; /* Точная длина нового контура */
+            stroke-dashoffset: 85;
+            transform-origin: center;
+            /* Анимации теперь применяются через класс .heart-animated */
         }
-        .section-full-bg .section-header {
-            color: var(--color-white);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .subtitle {
-            font-family: var(--font-body); /* Playfair Display для подзаголовков */
-            font-size: 1.3rem;
-            font-style: italic;
-            color: var(--color-text);
-            max-width: 700px;
-            margin: 0 auto 35px auto;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-        }
-        .section-full-bg .subtitle {
-            color: var(--color-highlight);
+        
+        /* НОВЫЙ КЛАСС ДЛЯ ЗАПУСКА АНИМАЦИИ СЕРДЦА ПОСЛЕ ВЫБОРА МУЗЫКИ */
+        .heart-animated #heart-path {
+            animation: 
+                draw-heart 3s ease-out 0.5s forwards,
+                fill-heart 2s ease-in 3.5s forwards,
+                pulsate-heart 1.5s ease-in-out 5.5s infinite;
         }
 
-        .elegant-divider {
-            width: 100px;
-            height: 2px;
-            background-color: var(--color-secondary);
-            margin: 35px auto 45px auto;
-            position: relative;
-            border-radius: 2px;
+        @keyframes draw-heart {
+            to {
+                stroke-dashoffset: 0;
+            }
         }
-        /* Можно добавить ::before и ::after для декоративных элементов на разделителе, как в дизайне.txt (сердечко или цветок) */
-
-
-        /* Hero Section */
-        .hero {
-            /* Фоновое фото из GitHub Pages. Убедитесь, что используется ссылка на "raw" файл. */
-            background-image: url('https://raw.githubusercontent.com/Suno2036/4/main/95e59d9a-7c3e-43d8-b520-6b9f6992fee3.jpeg');
+        
+        @keyframes fill-heart {
+            to {
+                fill: var(--color-primary);
+                stroke-opacity: 0.6;
+            }
         }
-
-        .names {
-            font-family: var(--font-heading);
-            font-size: 7rem; /* Очень крупно */
-            line-height: 1;
-            margin-bottom: 25px;
-            color: var(--color-white);
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+        
+        @keyframes pulsate-heart {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+            100% { transform: scale(1); }
         }
-        .hero .date {
-            font-family: var(--font-body);
-            font-style: normal;
-            font-weight: 500;
-            font-size: 2rem;
-            letter-spacing: 2px;
-            color: var(--color-highlight);
-        }
-
-        /* Invitation Section */
-        .invitation-text p {
-            font-family: var(--font-body);
-            font-size: 1.25rem;
-            margin-bottom: 1.5em;
-            color: var(--color-text);
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Calendar Design */
-        .calendar-section {
-            background-color: var(--color-white);
-        }
-        .calendar-highlight {
-            background-color: var(--color-bg);
-            border: 1px solid var(--color-highlight);
-            padding: 45px;
-            border-radius: 15px;
-            max-width: 500px;
-            margin: 30px auto;
-            box-shadow: 0 12px 30px rgba(141, 75, 96, 0.15); /* Тень с винным оттенком */
-        }
-        .calendar-month {
-            font-family: var(--font-accent);
-            text-transform: uppercase;
-            font-size: 1.5rem;
-            letter-spacing: 3px;
-            color: var(--color-secondary);
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-        .calendar-day {
-            font-family: var(--font-heading);
-            font-size: 7.5rem;
-            color: var(--color-primary);
-            line-height: 1;
-            margin-bottom: 5px;
-        }
-        .calendar-year-weekday {
-            font-family: var(--font-body);
-            font-size: 1.5rem;
-            color: var(--color-text);
-            font-style: italic;
-        }
-        .countdown {
-            margin-top: 35px;
-            font-family: var(--font-accent);
-            font-size: 1.2rem;
-            color: var(--color-primary);
-        }
-        /* Кнопка "Сохранить дату" теперь просто текст без функционала addeventatc */
-        .save-date-btn {
-            display: inline-block;
-            padding: 12px 28px;
-            background-color: var(--color-primary);
-            color: var(--color-white);
-            border: none;
-            border-radius: 30px;
-            font-family: var(--font-accent);
-            font-size: 1rem;
-            font-weight: 500;
-            text-decoration: none;
-            /* cursor: pointer; */ /* Убрал курсор-ссылку */
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-top: 25px;
-            box-shadow: 0 5px 15px rgba(141, 75, 96, 0.2);
-            pointer-events: none; /* Сделал некликабельным */
-        }
-        /* Убрал эффекты наведения для некликабельной кнопки */
-        /*
-        .save-date-btn:hover {
-            background-color: var(--color-dark);
-            transform: translateY(-2px);
-        }
-        */
-
-        /* Timeline Section */
-        .timeline-section {
-             background-color: var(--color-bg);
-        }
-        .timeline {
-            display: flex;
-            flex-direction: column; /* Для мобильных по умолчанию, изменится для десктопа */
-            align-items: center;
-            margin-top: 50px;
-            position: relative;
-            padding: 0 20px;
+        
+        /* НОВАЯ АНИМАЦИЯ: Мерцание на сердце (с исправленной маской) */
+        .heart-svg.shimmer-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 800px;
+            height: 100%;
+            /* ИСПРАВЛЕНО: Маска использует новый, правильный контур */
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            background: linear-gradient(100deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 80%);
+            transform: translateX(-100%);
+            animation: shimmer 1.5s ease-in-out 5.7s forwards;
         }
-         /* Горизонтальная линия будет сложнее в этой структуре, для вертикальной: */
-        .timeline::before {
+
+        @keyframes shimmer {
+            to {
+                transform: translateX(100%);
+            }
+        }
+
+        /* УЛУЧШЕННАЯ АНИМАЦИЯ: Текст */
+        .animated-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4.5rem;
+            color: var(--color-text);
+            opacity: 0;
+            animation: fade-in-up 1s ease-out 6.5s forwards;
+            margin-bottom: 20px;
+        }
+        
+        .animated-text span {
+            opacity: 0;
+            display: inline-block;
+            animation: letter-dance-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes letter-dance-in {
+            0% { opacity: 0; transform: translateY(40px) scale(0.7) rotate(-20deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+        }
+
+        .wedding-date {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            opacity: 0;
+            animation: fade-in-up 1.2s ease-out 8s forwards; /* Появляется после имен */
+        }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* СТИЛИ ДЛЯ МОДАЛЬНОГО ОКНА МУЗЫКИ */
+        .music-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(40, 20, 20, 0.92); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; visibility: hidden; transition: opacity 0.6s ease, visibility 0s 0.6s; }
+        .music-modal.is-active { opacity: 1; visibility: visible; transition: opacity 0.6s ease; }
+        .music-modal-content { background-color: var(--color-bg); padding: 45px; border-radius: 15px; text-align: center; box-shadow: 0 12px 35px rgba(0,0,0,0.25); max-width: 450px; margin: 20px; transform: scale(0.85); transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .music-modal.is-active .music-modal-content { transform: scale(1); }
+        .music-modal h3 { font-family: 'Great Vibes', cursive; font-size: 2.8rem; color: var(--color-primary); margin-bottom: 18px; }
+        .music-modal p { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--color-text); margin-bottom: 35px; }
+        .modal-buttons { display: flex; justify-content: center; gap: 20px; }
+        .modal-buttons button { padding: 14px 28px; border: none; border-radius: 28px; font-family: 'Playfair Display', serif; font-size: 1rem; cursor: pointer; transition: background-color 0.3s, transform 0.2s; }
+        #playMusicBtn { background-color: var(--color-primary); color: var(--color-white); }
+        #noMusicBtn { background-color: var(--color-secondary); color: var(--color-text); }
+
+        /* ОСНОВНЫЕ СТИЛИ САЙТА */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-accent); font-weight: 400; color: var(--color-text); background-color: var(--color-bg); line-height: 1.7; overflow-x: hidden; scroll-behavior: smooth; }
+        #main-content { display: none; }
+        .container { max-width: var(--container-max-width); margin: 0 auto; padding: 0 20px; position: relative; z-index: 2; }
+        .section { padding: var(--section-padding); min-height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; opacity: 0; transform: translateY(40px); transition: opacity 1s ease-out, transform 1s ease-out; border-bottom: 1px dashed var(--color-highlight); }
+        .section:last-of-type { border-bottom: none; }
+        .section.is-visible { opacity: 1; transform: translateY(0); }
+        .section-full-bg { min-height: 100vh; color: var(--color-white); background-size: cover; background-position: center center; background-attachment: fixed; }
+        .section-full-bg::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(40, 20, 20, 0.5); z-index: 1; }
+        .section-content { position: relative; z-index: 2; max-width: 750px; }
+        .section-header { font-family: var(--font-heading); font-size: 4.8rem; font-weight: normal; color: var(--color-primary); margin-bottom: 25px; line-height: 1.1; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .section-full-bg .section-header { color: var(--color-white); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .subtitle { font-family: var(--font-body); font-size: 1.3rem; font-style: italic; color: var(--color-text); max-width: 700px; margin: 0 auto 35px auto; font-weight: 400; letter-spacing: 0.5px; }
+        .section-full-bg .subtitle { color: var(--color-highlight); }
+        .elegant-divider { width: 100px; height: 2px; background-color: var(--color-secondary); margin: 35px auto 45px auto; position: relative; border-radius: 2px; }
+        .elegant-divider.is-visible { transform: scaleX(1); }
+        .section-full-bg .elegant-divider { background-color: var(--color-highlight); }
+        /* ОБНОВЛЕННЫЕ ФОНОВЫЕ ИЗОБРАЖЕНИЯ */
+        .hero { 
+            background-image: url('https://raw.githubusercontent.com/Suno2036/irina/main/%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F%20%D1%84%D0%BE%D1%82%D0%BA%D0%B0.jpeg'); 
+            background-position: 95% center; /* Сдвинуто еще правее */
+        }
+        .names { font-family: var(--font-heading); font-size: 7rem; line-height: 1; margin-bottom: 25px; color: var(--color-white); text-shadow: 2px 2px 8px rgba(0,0,0,0.6); }
+        .hero .date { font-family: var(--font-body); font-style: normal; font-weight: 500; font-size: 2rem; letter-spacing: 2px; color: var(--color-highlight); }
+        .invitation-text p { font-family: var(--font-body); font-size: 1.25rem; margin-bottom: 1.5em; color: var(--color-text); max-width: 700px; margin-left: auto; margin-right: auto; }
+        .calendar-section { background-color: var(--color-white); }
+        .calendar-highlight { background-color: var(--color-bg); border: 1px solid var(--color-highlight); padding: 45px; border-radius: 15px; max-width: 500px; margin: 30px auto; box-shadow: 0 12px 30px rgba(141, 75, 96, 0.15); }
+        .calendar-month { font-family: var(--font-accent); text-transform: uppercase; font-size: 1.5rem; letter-spacing: 3px; color: var(--color-secondary); margin-bottom: 10px; font-weight: 500; }
+        .calendar-day { font-family: var(--font-heading); font-size: 7.5rem; color: var(--color-primary); line-height: 1; margin-bottom: 5px; }
+        .calendar-year-weekday { font-size: 1.5rem; color: var(--color-text); font-style: italic; }
+        .countdown { margin-top: 35px; font-family: var(--font-accent); font-size: 1.2rem; color: var(--color-primary); }
+        .save-date-btn { display: inline-block; padding: 12px 28px; background-color: var(--color-primary); color: var(--color-white); border: none; border-radius: 30px; font-family: var(--font-accent); font-size: 1rem; font-weight: 500; text-decoration: none; transition: background-color 0.3s ease, transform 0.2s ease; margin-top: 25px; box-shadow: 0 5px 15px rgba(141, 75, 96, 0.2); pointer-events: none; }
+        .timeline-section { background-color: var(--color-bg); }
+        .timeline { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin-top: 50px; 
+            position: relative; 
+            padding: 0 20px; 
+            width: 100%; 
+            max-width: 800px; 
+        }
+        .timeline::before { /* Добавлено из ирина.txt */
             content: '';
             position: absolute;
             left: 50%;
@@ -268,86 +266,201 @@
             border-radius: 3px;
             display: none; /* Скрыто по умолчанию, будет видно на десктопах */
         }
-
-        .timeline-item {
-            position: relative;
-            padding: 25px;
-            margin-bottom: 30px;
-            width: 100%;
-            max-width: 500px; /* Ограничение ширины элемента */
-            background-color: var(--color-white);
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(141, 75, 96, 0.1);
-            text-align: left; /* Выравнивание текста внутри карточки */
+        .timeline-item { position: relative; padding: 25px; margin-bottom: 30px; width: 100%; max-width: 500px; background-color: var(--color-white); border-radius: 10px; box-shadow: 0 8px 20px rgba(141, 75, 96, 0.1); text-align: left; transition: transform 0.4s ease, box-shadow 0.4s ease; }
+        .timeline-item:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 18px 35px rgba(141, 75, 96, 0.2); }
+        .timeline-icon { width: 50px; height: 50px; background-color: var(--color-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; border: 3px solid var(--color-bg); box-shadow: 0 0 0 3px var(--color-primary); float: left; margin-right: 20px; }
+        .timeline-icon svg { width: 24px; height: 24px; stroke: var(--color-white); }
+        .timeline-content { overflow: hidden; }
+        .timeline-time { font-family: var(--font-accent); font-weight: 600; font-size: 1.3rem; color: var(--color-dark); margin-bottom: 8px; }
+        .timeline-event { font-family: var(--font-body); font-size: 1.15rem; color: var(--color-text); font-weight: 500; }
+        .timeline-address { font-size: 1rem; color: var(--color-primary); font-style: italic; margin-top: 8px; }
+        /* ОБНОВЛЕННЫЕ ФОНОВЫЕ ИЗОБРАЖЕНИЯ */
+        .venue-section { background-image: url('https://raw.githubusercontent.com/Suno2036/irina/main/%D1%81%D0%B5%D0%BC%D0%B5%D0%B9%D0%BD%D1%8B%D0%B9%20%D1%83%D0%B3%D0%BE%D0%BB%D0%BE%D0%BA.jpeg'); }
+        .venue-section .section-content p { font-family: var(--font-body); font-size: 1.25rem; line-height: 1.8; margin-bottom: 1.5em; }
+        .venue-address { font-family: var(--font-accent); font-weight: 600; font-size: 1.4rem; margin-top: 20px; padding: 12px 25px; background-color: rgba(255,255,255,0.2); border: 1px solid var(--color-highlight); border-radius: 8px; display: inline-block; }
+        .dresscode-section { background-color: var(--color-white); }
+        .dresscode-colors { display: flex; justify-content: center; gap: 25px; margin: 35px 0 45px 0; }
+        .color-swatch { 
+            width: 70px; 
+            height: 70px; 
+            border-radius: 50%; 
+            border: 4px solid var(--color-highlight); 
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-size: cover; /* Для изображений */
+            background-position: center; /* Для изображений */
         }
-        .timeline-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(141, 75, 96, 0.15);
-        }
-        .timeline-icon {
-            width: 50px;
-            height: 50px;
-            background-color: var(--color-primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            border: 3px solid var(--color-bg);
-            box-shadow: 0 0 0 3px var(--color-primary);
-            /* Для выравнивания иконки слева от текста: */
-            float: left;
-            margin-right: 20px;
-        }
+        .color-swatch:hover { transform: scale(1.15) rotate(15deg); box-shadow: 0 0 20px rgba(141, 75, 96, 0.4); }
+        /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ИЗОБРАЖЕНИЙ ВМЕСТО ЦВЕТОВ */
+        .swatch-burgundy { background-image: url('https://raw.githubusercontent.com/Suno2036/irina/main/%D0%B1%D0%BE%D1%80%D0%B4%D0%BE.png'); }
+        .swatch-pastel-1 { background-image: url('https://raw.githubusercontent.com/Suno2036/irina/main/%D0%B1%D0%B5%D0%B6.png'); }
+        .swatch-pastel-3 { background-image: url('https://raw.githubusercontent.com/Suno2036/irina/main/%D0%BD%D0%B5%D0%B6%D0%BD%D0%BE%20%D0%B3%D0%BE%D0%BB%D1%83%D0%B1%D0%BE%D0%B9.png'); }
+        .swatch-pastel-4 { background-image: url('https://raw.githubusercontent.com/Suno2036/irina/main/%D0%BD%D0%B5%D0%B6%D0%BD%D0%BE%20%D1%80%D0%BE%D0%B7%D0%BE%D0%B2%D0%B0%D1%8F.png'); }
 
-        .timeline-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--color-white);
+        .dresscode-note { font-family: var(--font-heading); font-size: 3rem; margin-top: 35px; color: var(--color-primary); }
+        .rsvp-section { background-color: var(--color-bg); }
+        .rsvp-deadline { font-family: var(--font-accent); font-weight: 500; font-size: 1.3rem; margin-bottom: 35px; color: var(--color-primary); }
+        .rsvp-form { max-width: 650px; margin: 0 auto; text-align: left; background-color: var(--color-white); padding: 45px; border-radius: 15px; box-shadow: 0 12px 35px rgba(141, 75, 96, 0.2); }
+        .form-group { margin-bottom: 28px; }
+        .form-group label { display: block; margin-bottom: 12px; font-family: var(--font-body); font-size: 1.2rem; color: var(--color-text); font-weight: 600; }
+        input[type="text"], textarea { width: 100%; padding: 16px; border: 1px solid var(--color-highlight); border-radius: 8px; font-family: var(--font-accent); font-size: 1rem; background-color: var(--color-bg); color: var(--color-text); transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(141, 75, 96, 0.2); }
+        textarea { min-height: 120px; resize: vertical; }
+        .radio-group label { font-weight: 400; font-family: var(--font-accent); display: flex; align-items: center; margin-bottom: 14px; cursor: pointer; font-size: 1.1rem; }
+        .radio-group input[type="radio"] { margin-right: 14px; accent-color: var(--color-primary); transform: scale(1.3); }
+        .submit-btn { display: inline-block; padding: 16px 40px; background-color: var(--color-primary); color: var(--color-white); border: none; border-radius: 30px; font-family: var(--font-accent); font-size: 1.15rem; font-weight: 500; text-decoration: none; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; box-shadow: 0 6px 18px rgba(141, 75, 96, 0.25); }
+        .submit-btn:hover { background-color: var(--color-dark); transform: translateY(-3px); }
+        .form-group.centered { text-align: center; margin-top: 35px; }
+        
+        /* Стили для секции Telegram */
+        .telegram-section {
+            background-color: var(--color-highlight);
         }
-        .timeline-content {
-            overflow: hidden; /* Чтобы контент не обтекал иконку неправильно */
-        }
-        .timeline-time {
-            font-family: var(--font-accent);
-            font-weight: 600;
-            font-size: 1.3rem;
-            color: var(--color-dark);
-            margin-bottom: 8px;
-        }
-        .timeline-event {
-            font-family: var(--font-body);
-            font-size: 1.15rem;
-            color: var(--color-text);
-            font-weight: 500;
-        }
-        .timeline-address {
-            font-size: 1rem;
+        .telegram-section .section-header {
             color: var(--color-primary);
-            font-style: italic;
-            margin-top: 8px;
+        }
+        .telegram-link-btn {
+            display: inline-block;
+            padding: 14px 30px;
+            background-color: #0088cc; /* Telegram blue */
+            color: var(--color-white);
+            border: none;
+            border-radius: 30px;
+            font-family: var(--font-accent);
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 6px 18px rgba(0, 136, 204, 0.25);
+            margin-top: 30px;
+        }
+        .telegram-link-btn:hover {
+            background-color: #006699;
+            transform: translateY(-3px);
         }
 
+        /* ОБНОВЛЕННЫЕ ФОНОВЫЕ ИЗОБРАЖЕНИЯ */
+        .thank-you-section { 
+            background-image: url('https://raw.githubusercontent.com/Suno2036/irina/main/%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F%20%D1%84%D0%BE%D1%82%D0%BA%D0%B0.jpeg'); 
+            background-position: 95% center; /* Сдвинуто еще правее */
+        }
+        .thank-you-section .names { font-size: 5.5rem; }
+        .footer { padding: 50px 20px; text-align: center; font-size: 1rem; font-family: var(--font-accent); color: var(--color-text); background-color: var(--color-highlight); border-top: 2px solid var(--color-secondary); }
+        .footer p { margin-bottom: 8px; }
+        .fixed-nav { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 18px; z-index: 1000; }
+        .nav-action-btn { display: flex; align-items: center; justify-content: center; width: 65px; height: 65px; background-color: var(--color-primary); color: var(--color-white); border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-decoration: none; transition: background-color 0.3s ease, transform 0.3s ease; border: none; cursor: pointer; } /* Added border:none and cursor:pointer */
+        .nav-action-btn:hover { background-color: var(--color-dark); transform: scale(1.1) translateY(-4px); }
+        .nav-action-btn svg { width: 28px; height: 28px; stroke: var(--color-white); }
+        .nav-action-btn .tooltip { visibility: hidden; width: 130px; background-color: var(--color-dark); color: #fff; text-align: center; border-radius: 6px; padding: 6px 0; position: absolute; z-index: 1; right: 115%; top: 50%; transform: translateY(-50%); opacity: 0; transition: opacity 0.3s; font-family: var(--font-accent); font-size: 0.9rem; }
+        .nav-action-btn:hover .tooltip { visibility: visible; opacity: 1; }
+        #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; background-color: transparent; }
+
+        /* Стили для модального окна карты */
+        .map-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001; /* Higher than music modal */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s 0.3s;
+        }
+        .map-modal.is-active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease;
+        }
+        .map-modal-content {
+            background-color: var(--color-bg);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            max-width: 400px;
+            margin: 20px;
+            position: relative; /* Для позиционирования кнопки закрытия */
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .map-modal.is-active .map-modal-content {
+            transform: scale(1);
+        }
+        .map-modal-content h3 {
+            font-family: var(--font-accent);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-bottom: 25px;
+        }
+        .map-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .map-options-list a {
+            display: block;
+            padding: 12px 20px;
+            background-color: var(--color-secondary);
+            color: var(--color-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-family: var(--font-accent);
+            font-size: 1.05rem;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .map-options-list a:hover {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            transform: translateX(5px);
+        }
+        .map-modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--color-dark);
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .map-modal-close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Стили для Яндекс.Карты */
+        .yandex-map-container {
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            margin: 40px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .yandex-map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Адаптивность */
         @media (min-width: 769px) {
-            .timeline {
-                flex-direction: column; /* Оставляем колонку для упрощения, но можно сделать шахматный порядок*/
-            }
-            .timeline::before { display: block; } /* Показываем линию на десктопе */
+            .timeline::before { display: block; }
             .timeline-item {
-                 width: calc(50% - 40px); /* Половина ширины минус отступ */
-                 margin-left: 40px; /* Отступ от линии */
-                 align-self: flex-start; /* Все элементы слева от линии для простоты */
+                 width: calc(50% - 40px);
+                 margin-left: 40px;
+                 align-self: flex-start;
             }
             .timeline-item:nth-child(even) {
-                align-self: flex-end; /* Четные справа */
+                align-self: flex-end;
                 margin-left: 0;
                 margin-right: 40px;
             }
-             /* Позиционирование иконок относительно линии */
             .timeline-item .timeline-icon {
                 position: absolute;
-                left: -25px; /* Позиция иконки на линии */
+                left: -25px;
                 top: 50%;
                 transform: translateY(-50%) translateX(-50%);
                 margin-bottom: 0;
@@ -356,335 +469,13 @@
             }
              .timeline-item:nth-child(even) .timeline-icon {
                 left: auto;
-                right: -25px; /* Иконка справа для четных */
+                right: -25px;
                 transform: translateY(-50%) translateX(50%);
             }
-            .timeline-item { padding-left: 40px; } /* Отступ для контента от иконки */
+            .timeline-item { padding-left: 40px; }
             .timeline-item:nth-child(even) { padding-left: 25px; padding-right: 40px; text-align: right; }
-
         }
 
-
-        /* Venue Section (Meeting Place) */
-        .venue-section {
-            /* Можно добавить фото места церемонии или банкета */
-            background-image: url('https://images.unsplash.com/photo-1529636798458-793c71670600?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3'); /* Пример, замените */
-        }
-        .venue-section .section-content p {
-             font-family: var(--font-body);
-             font-size: 1.25rem;
-             line-height: 1.8;
-             margin-bottom: 1.5em;
-        }
-         .venue-address {
-             font-family: var(--font-accent);
-             font-weight: 600;
-             font-size: 1.4rem;
-             margin-top: 20px;
-             padding: 12px 25px;
-             background-color: rgba(255,255,255,0.2);
-             border: 1px solid var(--color-highlight);
-             border-radius: 8px;
-             display: inline-block;
-         }
-
-
-        /* Dress Code Section */
-        .dresscode-section {
-             background-color: var(--color-white);
-        }
-        .dresscode-colors {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin: 35px 0 45px 0;
-        }
-        .color-swatch {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 4px solid var(--color-highlight);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .color-swatch:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(141, 75, 96, 0.3);
-        }
-        /* Цвета дресс-кода */
-        .swatch-burgundy { background-color: var(--color-primary); } /* Винный */
-        .swatch-pastel-1 { background-color: var(--color-accent-pastel-1); } /* Пастельно-зеленый */
-        /* .swatch-pastel-2 { background-color: var(--color-accent-pastel-2); } /* Пастельно-голубой - удален */
-        .swatch-pastel-3 { background-color: var(--color-accent-pastel-3); } /* Пастельно-лавандовый */
-        .swatch-pastel-4 { background-color: var(--color-accent-pastel-4); } /* Пастельно-желтый - добавлен */
-
-
-        .dresscode-note {
-             font-family: var(--font-heading);
-             font-size: 3rem;
-             margin-top: 35px;
-             color: var(--color-primary);
-        }
-
-        /* RSVP Section */
-        .rsvp-section {
-             background-color: var(--color-bg);
-        }
-        .rsvp-deadline {
-            font-family: var(--font-accent);
-            font-weight: 500;
-            font-size: 1.3rem;
-            margin-bottom: 35px;
-            color: var(--color-primary);
-        }
-        .rsvp-form {
-            max-width: 650px;
-            margin: 0 auto;
-            text-align: left;
-            background-color: var(--color-white);
-            padding: 45px;
-            border-radius: 15px;
-            box-shadow: 0 12px 35px rgba(141, 75, 96, 0.2);
-        }
-        .form-group {
-            margin-bottom: 28px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 12px;
-            font-family: var(--font-body);
-            font-size: 1.2rem;
-            color: var(--color-text);
-            font-weight: 600;
-        }
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 16px;
-            border: 1px solid var(--color-highlight);
-            border-radius: 8px;
-            font-family: var(--font-accent); /* Montserrat для полей ввода */
-            font-size: 1rem;
-            background-color: var(--color-bg);
-            color: var(--color-text);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        input[type="text"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(141, 75, 96, 0.2);
-        }
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        .radio-group label {
-            font-weight: 400;
-            font-family: var(--font-accent);
-            display: flex;
-            align-items: center;
-            margin-bottom: 14px;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-        .radio-group input[type="radio"] {
-            margin-right: 14px;
-            accent-color: var(--color-primary);
-            transform: scale(1.3);
-        }
-        .submit-btn {
-            display: inline-block;
-            padding: 16px 40px;
-            background-color: var(--color-primary);
-            color: var(--color-white);
-            border: none;
-            border-radius: 30px;
-            font-family: var(--font-accent);
-            font-size: 1.15rem;
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 6px 18px rgba(141, 75, 96, 0.25);
-        }
-        .submit-btn:hover {
-            background-color: var(--color-dark);
-            transform: translateY(-3px);
-        }
-        .form-group.centered {
-            text-align: center;
-            margin-top: 35px;
-        }
-
-        /* Thank You Section */
-        /* Фоновое фото из GitHub Pages. Убедитесь, что используется ссылка на "raw" файл. */
-        .thank-you-section {
-             background-image: url('https://raw.githubusercontent.com/Suno2036/4/main/95e59d9a-7c3e-43d8-b520-6b9f6992fee3.jpeg');
-        }
-         .thank-you-section .names {
-             font-size: 5.5rem;
-         }
-
-        /* Footer */
-        .footer {
-            padding: 50px 20px;
-            text-align: center;
-            font-size: 1rem;
-            font-family: var(--font-accent);
-            color: var(--color-text); /* Сделаем текст чуть темнее для читаемости */
-            background-color: var(--color-highlight); /* Пастельный фон для футера */
-            border-top: 2px solid var(--color-secondary);
-        }
-        .footer p { margin-bottom: 8px; }
-
-
-        /* Navigation Buttons (Fixed) */
-        .fixed-nav {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            z-index: 1000;
-        }
-        .nav-action-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 65px;
-            height: 65px;
-            background-color: var(--color-primary);
-            color: var(--color-white);
-            border-radius: 50%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .nav-action-btn:hover {
-            background-color: var(--color-dark);
-            transform: scale(1.1) translateY(-4px);
-        }
-        .nav-action-btn svg {
-            width: 28px;
-            height: 28px;
-            stroke: var(--color-white);
-        }
-        .nav-action-btn .tooltip {
-            visibility: hidden;
-            width: 130px;
-            background-color: var(--color-dark);
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 6px 0;
-            position: absolute;
-            z-index: 1;
-            right: 115%;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-family: var(--font-accent);
-            font-size: 0.9rem;
-        }
-        .nav-action-btn:hover .tooltip {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* Music Modal */
-        .music-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(40, 20, 20, 0.88);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.6s ease, visibility 0s 0.6s;
-        }
-        .music-modal.is-active {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.6s ease;
-        }
-        .music-modal-content {
-            background-color: var(--color-bg);
-            padding: 45px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
-            max-width: 450px;
-            transform: scale(0.85);
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Эффект пружины */
-        }
-        .music-modal.is-active .music-modal-content {
-            transform: scale(1);
-        }
-        .music-modal h3 {
-            font-family: var(--font-heading);
-            font-size: 2.8rem;
-            color: var(--color-primary);
-            margin-bottom: 18px;
-        }
-        .music-modal p {
-            font-family: var(--font-body);
-            font-size: 1.15rem;
-            color: var(--color-text);
-            margin-bottom: 35px;
-        }
-        .modal-buttons { /* Исправляем выравнивание кнопок */
-            display: flex;
-            justify-content: center; /* Центрируем кнопки */
-            gap: 20px; /* Пространство между кнопками */
-        }
-        .modal-buttons button {
-            padding: 14px 28px;
-            /* margin: 0 10px; Убираем, используем gap */
-            border: none;
-            border-radius: 28px;
-            font-family: var(--font-accent);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            min-width: 150px; /* Минимальная ширина для лучшего вида */
-        }
-        #playMusicBtn {
-            background-color: var(--color-primary);
-            color: var(--color-white);
-        }
-        #playMusicBtn:hover {
-            background-color: var(--color-dark);
-            transform: translateY(-2px);
-        }
-        #noMusicBtn {
-            background-color: var(--color-secondary);
-            color: var(--color-text); /* Текст темнее на светлом фоне */
-        }
-         #noMusicBtn:hover {
-            background-color: var(--color-text);
-            color: var(--color-white);
-            transform: translateY(-2px);
-        }
-
-        /* Particles.js Background Animation */
-        #particles-js {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            background-color: transparent;
-        }
-
-        /* Responsive */
         @media (max-width: 992px) {
             .names { font-size: 5.5rem; }
             .section-header { font-size: 3.8rem; }
@@ -692,8 +483,7 @@
         }
 
         @media (max-width: 768px) {
-            /* Responsive font sizes for tablets and smaller desktops */
-            .names { font-size: 4.5rem; line-height: 1.1; } /* Adjusted line-height */
+            .names { font-size: 4.5rem; line-height: 1.1; }
             .hero .date { font-size: 1.6rem; }
             .section-header { font-size: 3.2rem; }
             .subtitle { font-size: 1.1rem; }
@@ -716,12 +506,12 @@
             .footer p { font-size: 0.95rem; }
             .music-modal h3 { font-size: 2.5rem; }
             .music-modal p { font-size: 1.1rem; }
-
+            .telegram-link-btn { font-size: 1rem; padding: 12px 25px;}
 
             .timeline::before { display: none; }
             .timeline-item, .timeline-item:nth-child(even) {
                 width: 100%;
-                max-width: 90%; /* Немного уже на мобильных */
+                max-width: 90%;
                 text-align: left !important;
                 padding-left: 20px !important;
                 padding-right: 20px !important;
@@ -731,48 +521,65 @@
                 margin-right: auto !important;
             }
              .timeline-item .timeline-icon, .timeline-item:nth-child(even) .timeline-icon {
-                position: relative; /* Возвращаем в поток */
+                position: relative;
                 left: 0; top:0;
                 transform: none;
-                float: left; /* Иконка слева */
+                float: left;
                 margin-right: 15px;
-                margin-bottom: 10px; /* Отступ снизу */
+                margin-bottom: 10px;
             }
              .timeline-content {
-                 overflow: visible; /* Разрешаем контенту обтекать */
+                 overflow: visible;
              }
 
-
             .rsvp-form { padding: 30px; }
-            .fixed-nav { flex-direction: row; bottom: 15px; left: 50%; transform: translateX(-50%); gap: 12px;}
+            /* Updated fixed-nav for mobile */
+            .fixed-nav { 
+                flex-direction: column;
+                bottom: 15px; 
+                right: 15px;
+                left: auto;
+                transform: none;
+                gap: 12px;
+            }
             .nav-action-btn { width: 55px; height: 55px; }
             .nav-action-btn .tooltip { display: none; }
             .color-swatch { width: 55px; height: 55px; }
 
+            .yandex-map-container {
+                height: 300px;
+            }
+
              /* Ensure text is not cut off */
             p, div, span, h1, h2, h3, label {
-                word-break: break-word; /* Break long words */
-                overflow-wrap: break-word; /* Break long words if they overflow */
+                word-break: break-word;
+                overflow-wrap: break-word;
             }
         }
 
         @media (max-width: 480px) {
-            /* Responsive font sizes for phones */
-            .names { font-size: 3rem; line-height: 1.1; } /* Еще меньше имена */
-            .hero .date { font-size: 1.2rem; } /* Еще меньше дата */
-            .section-header { font-size: 2.2rem; } /* Еще меньше заголовки секций */
-            .subtitle { font-size: 0.9rem; } /* Еще меньше подзаголовок */
-            .invitation-text p { font-size: 1rem; } /* Еще меньше основной текст приглашения */
+            .hero .names { 
+                font-size: 2.8rem;
+                margin-top: -250px;
+                margin-bottom: 5px;
+            }
+            .hero .date { 
+                font-size: 1.2rem;
+                margin-top: 80px;
+            }
+            .section-header { font-size: 2.2rem; }
+            .subtitle { font-size: 0.9rem; }
+            .invitation-text p { font-size: 1rem; }
             .calendar-month { font-size: 1.2rem; }
-            .calendar-day { font-size: 5rem; } /* Еще меньше день в календаре */
+            .calendar-day { font-size: 5rem; }
             .calendar-year-weekday { font-size: 1rem; }
-            .countdown { font-size: 1rem; }
+            .countdown { font-size: 1.2rem; }
             .timeline-time { font-size: 1.1rem; }
-            .timeline-event { font-size: 1rem; }
+            .timeline-event { font-size: 1.0rem; }
             .timeline-address { font-size: 0.9rem; }
             .venue-section .section-content p { font-size: 1rem; }
             .venue-address { font-size: 1.1rem; }
-            .dresscode-note { font-size: 2rem; } /* Еще меньше текст дресс-кода */
+            .dresscode-note { font-size: 2rem; }
             .rsvp-deadline { font-size: 1.1rem; }
             .form-group label { font-size: 1.1rem; }
             input[type="text"], textarea { font-size: 0.95rem; }
@@ -780,373 +587,605 @@
             .submit-btn { font-size: 1rem; }
             .footer p { font-size: 0.9rem; }
             .music-modal h3 { font-size: 2.2rem; }
-            .music-modal p { font-size: 1rem; }
+            .music-modal p { font-size: 1.0rem; }
+            .telegram-link-btn { font-size: 0.95rem; padding: 10px 20px;}
 
-            .color-swatch { width: 45px; height: 45px; gap: 15px;} /* Еще меньше кружки цветов */
+
+            .color-swatch { width: 45px; height: 45px; gap: 15px;}
             .rsvp-form { padding: 20px; }
             .music-modal-content { padding: 30px; margin: 0 15px; max-width: calc(100% - 30px); }
-            .modal-buttons { flex-direction: column; gap: 15px;} /* Кнопки друг под другом на маленьких экранах */
+            .modal-buttons { flex-direction: column; gap: 15px;}
             .modal-buttons button { padding: 12px 20px; font-size: 0.95rem; width: 100%;}
             .timeline-item, .timeline-item:nth-child(even) { max-width: 95%; }
-            .timeline-icon { width: 40px; height: 40px; } /* Еще меньше иконки таймлайна */
+            .timeline-icon { width: 40px; height: 40px; }
             .timeline-icon svg { width: 20px; height: 20px; }
+            .hero, .thank-you-section {
+                background-position: center center;
+            }
+            .thank-you-section .names { 
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+        }
 
+        /* Styles for the scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--color-white);
+            font-family: var(--font-accent);
+            font-size: 0.9rem;
+            z-index: 5;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .scroll-indicator.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .scroll-indicator svg {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 5px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Media queries for scroll indicator on smaller screens */
+        @media (max-width: 480px) {
+            .scroll-indicator {
+                bottom: 20px;
+                font-size: 0.8rem;
+            }
+            .scroll-indicator svg {
+                width: 25px;
+                height: 25px;
+            }
         }
 
     </style>
 </head>
-<body>
-    <div id="particles-js"></div>
+<body class="preloading">
 
-    <div class="container-wrapper">
-        <section class="section section-full-bg hero">
-            <div class="container">
-                <div class="section-content">
-                    <h1 class="names">Михаил<br>&amp;<br>Ирина</h1>
-                    <div class="date">15 августа 2025</div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section invitation-section">
-            <div class="container">
-                <div class="section-content invitation-text">
-                    <h2 class="section-header">Мы Женимся!</h2>
-                    <div class="elegant-divider"></div>
-                    <p class="subtitle">С безграничной радостью и волнением в сердце мы приглашаем вас, наших дорогих родных и близких друзей, стать свидетелями самого важного и прекрасного события в нашей жизни – дня нашей свадьбы!</p>
-                    <p>Этот день – начало нашей общей истории, и мы мечтаем разделить его тепло, любовь и счастье с теми, кто нам по-настоящему дорог. Ваше присутствие наполнит этот праздник особым светом и сделает его поистине незабываемым.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section calendar-section">
-            <div class="container">
-                <h2 class="section-header">Наша Свадьба</h2>
-                <div class="elegant-divider"></div>
-                <div class="calendar-highlight">
-                    <div class="calendar-month">Август</div>
-                    <div class="calendar-day">15</div>
-                    <div class="calendar-year-weekday">2025 года, Пятница</div>
-                </div>
-                <div class="countdown" id="countdown-timer"></div>
-                <div class="save-date-btn">
-                    Сохранить дату в календарь
-                </div>
-            </div>
-        </section>
-
-        <section class="section timeline-section">
-             <div class="container">
-                <h2 class="section-header">Программа Праздника</h2>
-                <div class="elegant-divider"></div>
-                <p class="subtitle">Мы продумали каждую деталь, чтобы этот день был наполнен радостью, теплом и незабываемыми моментами.</p>
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        </div>
-                        <div class="timeline-content">
-                            <div class="timeline-time">11:40</div>
-                            <div class="timeline-event">Сбор гостей</div>
-                            </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </div>
-                         <div class="timeline-content">
-                            <div class="timeline-time">12:00</div>
-                            <div class="timeline-event">Торжественная церемония бракосочетания</div>
-                            </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                        </div>
-                        <div class="timeline-content">
-                            <div class="timeline-time">14:00</div>
-                            <div class="timeline-event">Праздничный банкет, поздравления и танцы</div>
-                            </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.02c5.514 0 10 3.592 10 8.015 0 4.423-4.486 8.015-10 8.015S2 14.46 2 10.035C2 5.612 6.486 2.02 12 2.02z"></path><path d="M12 12l6-3-6-3-6 3 6 3z"></path><path d="M6 12.545v2.91c0 1.654 2.686 3 6 3s6-1.346 6-3v-2.91"></path></svg>
-                        </div>
-                        <div class="timeline-content">
-                            <div class="timeline-time">21:00</div>
-                            <div class="timeline-event">Свадебный торт и кульминация вечера</div>
-                        </div>
-                    </div>
-                     <div class="timeline-item">
-                        <div class="timeline-icon">
-                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        </div>
-                         <div class="timeline-content">
-                             <div class="timeline-time">23:30</div>
-                            <div class="timeline-event">Завершение праздника, теплые проводы</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section section-full-bg venue-section">
-            <div class="container">
-                <div class="section-content">
-                    <h2 class="section-header">Место Встречи и Атмосфера</h2>
-                    <div class="elegant-divider"></div>
-                    <p>Наше торжество пройдет в особенных для нас местах. Церемония регистрации состоится в прекрасном <strong>Дворце Бракосочетания в Зубовой Поляне</strong>. После официальной части мы приглашаем вас разделить с нами радость на праздничном банкете в уютном кафе "Семейный уголок".</p>
-                    <p class="venue-address">Банкет: <strong>Кафе "Семейный уголок", р.п. Зубова Поляна, Почтовый пер., 16А</strong></p>
-                    <p>Мы стремимся создать атмосферу искренности, тепла и непринужденного веселья, где каждый из вас почувствует себя желанным гостем и сможет разделить с нами счастье этого дня.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section dresscode-section">
-            <div class="container">
-                <h2 class="section-header">Дресс-код</h2>
-                <div class="elegant-divider"></div>
-                <p class="subtitle">Мы будем очень признательны, если вы поддержите стиль нашего торжества, выбрав наряды в элегантной и утонченной цветовой гамме. </p>
-                <div class="dresscode-colors">
-                    <div class="color-swatch swatch-burgundy" title="Винный"></div> <div class="color-swatch swatch-pastel-1" title="Пастельно-зеленый"></div>
-                    <div class="color-swatch swatch-pastel-3" title="Пастельно-лавандовый/розовый"></div>
-                    <div class="color-swatch swatch-pastel-4" title="Пастельно-желтый"></div> </div>
-                <div class="dresscode-note">Ваш изысканный образ станет частью волшебства этого дня!</div>
-            </div>
-        </section>
-
-        <section class="section rsvp-section">
-            <div class="container">
-                 <h2 class="section-header">Подтвердите Присутствие</h2>
-                 <div class="elegant-divider"></div>
-                 <p class="subtitle">Ваш ответ очень важен для нас, чтобы мы могли сделать наш праздник идеальным. Пожалуйста, дайте нам знать о ваших планах.</p>
-                 <p class="rsvp-deadline">Просим подтвердить присутствие до <strong>20 июля 2025 года</strong>.</p>
-
-                <form class="rsvp-form" id="rsvpForm">
-                    <div class="form-group">
-                        <label for="guest_name">Ваши имя и фамилия:</label> <input type="text" id="guest_name" name="guest_name" placeholder="Например, Ирина Иванова" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Планируете ли вы разделить с нами этот день?</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="attendance" value="Да, с радостью буду(ем)!" checked> Да, с радостью буду(ем)!</label>
-                            <label><input type="radio" name="attendance" value="К сожалению, не смогу(не сможем)"> К сожалению, не смогу(не сможем)</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="wishes">Ваши теплые слова и пожелания (по желанию):</label>
-                        <textarea id="wishes" name="wishes" placeholder="Будем рады прочитать!"></textarea>
-                    </div>
-
-                    <div class="form-group centered">
-                         <button type="submit" class="submit-btn">Отправить ответ</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <section class="section section-full-bg thank-you-section">
-            <div class="container">
-                <div class="section-content">
-                    <h2 class="names">С Любовью и Нетерпением,<br>Ваши Михаил и Ирина</h2>
-                    <div class="elegant-divider" style="background-color: var(--color-highlight);"></div>
-                    <p class="subtitle" style="color: var(--color-highlight);">Мы предвкушаем этот волшебный день и будем безмерно счастливы разделить его с вами!</p>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Михаил &amp; Ирина. Создано с любовью.</p>
-            <p>Разработчик сайта Олег Рашидович Надоршин</p>
-        </div>
-    </footer>
-
-    <div class="fixed-nav">
-        <a href="tel:+79271947505" class="nav-action-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-            <span class="tooltip">Позвонить нам</span>
-        </a>
-        <a href="https://yandex.ru/maps/?text=ул. Новикова-Прибоя, 2, рабочий посёлок Зубова Поляна" target="_blank" class="nav-action-btn">
-             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            <span class="tooltip">Карта проезда (ЗАГС)</span> </a>
-    </div>
-
+    <!-- МУЗЫКАЛЬНОЕ МОДАЛЬНОЕ ОКНО -->
     <div class="music-modal" id="musicModal">
         <div class="music-modal-content">
             <h3>Музыка Любви</h3>
-            <p>Разрешите этому сайту воспроизвести для вас нежную романтическую мелодию, чтобы создать настроение?</p>
+            <p>Разрешить сайту воспроизвести нежную мелодию для создания настроения?</p>
             <div class="modal-buttons">
-                <button id="playMusicBtn">Да, включить музыку</button>
+                <button id="playMusicBtn">Да, с удовольствием</button>
                 <button id="noMusicBtn">Нет, спасибо</button>
             </div>
         </div>
     </div>
-
     <audio id="backgroundMusic" loop>
-        <source src="https://raw.githubusercontent.com/Suno2036/4/main/c31fae6e22c68c5%20(1).mp3" type="audio/mpeg">
-        Ваш браузер не поддерживает воспроизведение аудио.
+        <source src="https://raw.githubusercontent.com/Suno2036/irina/main/Kajjfuyu_-_Vesna_305_73420974.mp3" type="audio/mpeg">
     </audio>
+
+    <!-- ПРЕЛОАДЕР С АНИМАЦИЕЙ -->
+    <div id="preloader">
+        <div class="animation-container" id="animationContainer">
+            <!-- ИСПРАВЛЕННОЕ СЕРДЦЕ -->
+            <div class="heart-svg" id="heartContainer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path id="heart-path" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
+            <div class="animated-text" id="animatedNames"></div>
+            <p class="wedding-date">15 августа 2025</p>
+        </div>
+    </div>
+    
+    <!-- ОСНОВНОЙ КОНТЕНТ САЙТА -->
+    <main id="main-content">
+        <div id="particles-js"></div>
+        <div class="container-wrapper">
+            <section class="section section-full-bg hero" id="hero-section">
+                <div class="container">
+                    <div class="section-content">
+                        <h1 class="names">Михаил<br>&amp;<br>Ирина</h1>
+                        <div class="date">15 августа 2025</div>
+                    </div>
+                </div>
+                <!-- Scroll Down Indicator -->
+                <div class="scroll-indicator" id="scrollIndicator">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <polyline points="19 12 12 19 5 12"></polyline>
+                    </svg>
+                    <span>Листайте вниз</span>
+                </div>
+            </section>
+            <section class="section invitation-section">
+                <div class="container">
+                    <div class="section-content invitation-text">
+                        <h2 class="section-header">Мы Женимся!</h2>
+                        <div class="elegant-divider"></div>
+                        <p class="subtitle">С безграничной радостью и волнением в сердце мы приглашаем вас, наших дорогих родных и близких друзей, стать свидетелями самого важного и прекрасного события в нашей жизни – дня нашей свадьбы!</p>
+                        <!-- ИСПРАВЛЕНИЕ В ТЕКСТЕ -->
+                        <p>Этот день – начало нашей общей истории, и мы мечтаем разделить его тепло, любовь и счастье с теми, кто нам по-настоящему дорог.</p>
+                        <p>Ваше присутствие наполнит этот праздник особым светом и сделает его поистине незабываемым.</p>
+                    </div>
+                </div>
+            </section>
+            <section class="section calendar-section">
+                <div class="container">
+                    <h2 class="section-header">Наша Свадьба</h2>
+                    <div class="elegant-divider"></div>
+                    <div class="calendar-highlight">
+                        <div class="calendar-month">Август</div>
+                        <div class="calendar-day">15</div>
+                        <div class="calendar-year-weekday">2025 года, Пятница</div>
+                    </div>
+                    <div class="countdown" id="countdown-timer"></div>
+                    <div class="save-date-btn">Сохранить дату в календарь</div>
+                </div>
+            </section>
+            <section class="section timeline-section">
+                 <div class="container">
+                    <h2 class="section-header">Программа Праздника</h2>
+                    <div class="elegant-divider"></div>
+                    <p class="subtitle">Мы продумали каждую деталь, чтобы этот день был наполнен радостью, теплом и незабываемыми моментами.</p>
+                    <p class="subtitle" style="font-style: normal; margin-top: 20px; max-width: 800px; color: var(--color-text);">
+                        Для удобства и приятного начала дня, друзья и родные со стороны Михаила, пожалуйста, присоединяйтесь к нам по его адресу. Близких и друзей Ирины мы будем рады видеть у нее дома.
+                    </p>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">9:40</div>
+                                <div class="timeline-event">Сбор гостей у Михаила</div>
+                                <div class="timeline-address">Зубова Поляна, Электронная, 70</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">9:40</div>
+                                <div class="timeline-event">Сбор у Ирины</div>
+                                <div class="timeline-address">Зубова Поляна, Пушкина 19</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">12:00</div>
+                                <div class="timeline-event">Торжественная церемония бракосочетания в ЗАГСе</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">13:00</div>
+                                <div class="timeline-event">Выездная регистрация</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">15:00</div>
+                                <div class="timeline-event">Праздничный банкет, поздравления и танцы</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.02c5.514 0 10 3.592 10 8.015 0 4.423-4.486 8.015-10 8.015S2 14.46 2 10.035C2 5.612 6.486 2.02 12 2.02z"></path><path d="M12 12l6-3-6-3-6 3 6 3z"></path><path d="M6 12.545v2.91c0 1.654 2.686 3 6 3s6-1.346 6-3v-2.91"></path></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">21:00</div>
+                                <div class="timeline-event">Свадебный торт и кульминация вечера</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">23:30</div>
+                                <div class="timeline-event">Завершение праздника, теплые проводы</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="subtitle" style="font-style: normal; margin-top: 20px; max-width: 800px; color: var(--color-primary);">
+                        По пути к месту выездной регистрации мы проедем через живописную заповедную зону. 
+                        Пожалуйста, будьте внимательны за рулем, снизьте скорость до 20 км/ч 
+                        и наслаждайтесь тишиной, ведь здесь обитают прекрасные животные, 
+                        которых, возможно, нам посчастливится встретить! Пусть каждый момент пути 
+                        наполнится волшебством природы.
+                    </p>
+                </div>
+            </section>
+            <section class="section section-full-bg venue-section">
+                <div class="container">
+                    <div class="section-content">
+                        <h2 class="section-header">Места Нашего Торжества</h2>
+                        <div class="elegant-divider"></div>
+                        <p>
+                            Наше торжество пройдет в нескольких прекрасных местах, каждое из которых выбрано с любовью, 
+                            чтобы каждый момент этого дня стал незабываемым. Торжественная церемония бракосочетания состоится 
+                            в величественном <strong>Дворце Бракосочетания в Зубовой Поляне</strong>. После официальной части мы приглашаем вас 
+                            на особенную выездную регистрацию, наполненную красотой природы. 
+                            Завершим этот незабываемый день праздничным банкетом в уютном 
+                            кафе "Семейный уголок", где нас ждут веселье, вкусные угощения и теплые моменты.
+                        </p>
+                        <p class="venue-address">
+                            Банкет: <strong>Кафе "Семейный уголок", р.п. Зубова Поляна, Почтовый пер., 16А</strong>
+                        </p>
+                        <p>
+                            Мы стремимся создать атмосферу искренности, тепла и непринужденного веселья, 
+                            где каждый из вас почувствует себя желанным гостем и сможет разделить с нами счастье этого дня.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="section dresscode-section">
+                <div class="container"><h2 class="section-header">Дресс-код</h2><div class="elegant-divider"></div><p class="subtitle">Мы будем очень признательны, если вы поддержите стиль нашего торжества, выбрав наряды в элегантной и утонченной цветовой гамме.</p><div class="dresscode-colors">
+                    <div class="color-swatch swatch-burgundy" title="Бордовый"></div>
+                    <div class="color-swatch swatch-pastel-1" title="Бежевый"></div>
+                    <div class="color-swatch swatch-pastel-3" title="Нежно-голубой"></div>
+                    <div class="color-swatch swatch-pastel-4" title="Нежно-розовый"></div>
+                </div><div class="dresscode-note">Ваш изысканный образ станет частью волшебства этого дня!</div></div>
+            </section>
+            <section class="section rsvp-section">
+                <div class="container">
+                    <h2 class="section-header">Подтвердите Присутствие</h2>
+                    <div class="elegant-divider"></div>
+                    <p class="subtitle">Ваш ответ очень важен для нас, чтобы мы могли сделать наш праздник идеальным. Пожалуйста, дайте нам знать о ваших планах.</p>
+                    <p class="rsvp-deadline">Просим подтвердить присутствие до <strong>5 июля 2025 года</strong>.</p>
+                    <form class="rsvp-form" id="rsvpForm">
+                        <div class="form-group"><label for="guest_name">Ваши имя и фамилия:</label><input type="text" id="guest_name" name="guest_name" placeholder="Например, Ирина Иванова" required></div>
+                        <div class="form-group"><label>Планируете ли вы разделить с нами этот день?</label><div class="radio-group"><label><input type="radio" name="attendance" value="Да, с радостью буду(ем)!" checked> Да, с радостью буду(ем)!</label><label><input type="radio" name="attendance" value="К сожалению, не смогу(не сможем)"> К сожалению, не смогу(не сможем)</label></div></div>
+                        <div class="form-group"><label for="wishes">Ваши теплые слова и пожелания (по желанию):</label><textarea id="wishes" name="wishes" placeholder="Будем рады прочитать!"></textarea></div>
+                        <div class="form-group centered"><button type="submit" class="submit-btn">Отправить ответ</button></div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Новый блок Telegram -->
+            <section class="section telegram-section">
+                <div class="container">
+                    <div class="section-content">
+                        <h2 class="section-header">Делитесь Моментами!</h2>
+                        <div class="elegant-divider"></div>
+                        <p class="subtitle" style="font-style: normal; color: var(--color-text); font-family: var(--font-body);">
+                            ДОРОГИЕ ГОСТИ!
+                            МЫ СОЗДАЛИ ГРУППУ В TELEGRAM,
+                            ГДЕ МОЖНО БУДЕТ ДОБАВЛЯТЬ
+                            ФОТО И ВИДЕО СО СВАДЬБЫ.
+                        </p>
+                        <p class="subtitle" style="font-style: italic; color: var(--color-primary); font-family: var(--font-body);">
+                            ДАВАЙТЕ ПОДЕЛИМСЯ
+                            ДРУГ С ДРУГОМ СЧАСТЛИВЫМИ
+                            МОМЕНТАМИ ЭТОГО ВАЖНОГО ДНЯ!
+                        </p>
+                        <a href="https://t.me/+yTdWNMKbEwgyNWFi" target="_blank" class="telegram-link-btn">Вступить в группу</a>
+                    </div>
+                </div>
+            </section>
+            <!-- Конец нового блока Telegram -->
+
+            <section class="section section-full-bg thank-you-section">
+                <div class="container"><div class="section-content"><h2 class="names">С Любовью и Нетерпением,<br>Ваши Михаил и Ирина</h2><div class="elegant-divider"></div><p class="subtitle">Мы предвкушаем этот волшебный день и будем безмерно счастливы разделить его с вами!</p></div></div>
+            </section>
+
+            <!-- Новый блок с Яндекс.Картой -->
+            <section class="section yandex-map-section">
+                <div class="container">
+                    <h2 class="section-header">Наш Свадебный Маршрут</h2>
+                    <div class="elegant-divider"></div>
+                    <p class="subtitle">Постройте свой маршрут к месту торжества. Мы отметили ключевые точки, чтобы вам было удобно спланировать поездку.</p>
+                    <div class="yandex-map-container">
+                        <iframe src="https://yandex.ru/map-widget/v1/?rtext=Зубова+Поляна,+Электронная,+70~Зубова+Поляна,+Пушкина+19~ул.+Новикова-Прибоя,+2,+рабочий+посёлок+Зубова+Поляна~54.121093,42.702303~р.п.+Зубова+Поляна,+Почтовый+пер.,+16А&rtt=auto&z=12" frameborder="0" allowfullscreen="true" style="position:relative;"></iframe>
+                    </div>
+                </div>
+            </section>
+            <!-- Конец нового блока с Яндекс.Картой -->
+
+        </div>
+        <footer class="footer">
+            <div class="container"><p>&copy; 2025 Михаил &amp; Ирина. Создано с любовью.</p><p>Разработчик сайта Олег Рашидович Надоршин</p></div>
+        </footer>
+        <div class="fixed-nav">
+            <!-- ИСПРАВЛЕННАЯ КНОПКА МУЗЫКИ -->
+            <button id="musicToggleButton" class="nav-action-btn">
+                <svg id="musicIcon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <g id="icon-volume">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M22.07 1.93a15 15 0 0 1 0 20.14"></path>
+                    </g>
+                    <g id="icon-mute" style="display: none;">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <line x1="23" y1="9" x2="17" y2="15"></line>
+                        <line x1="17" y1="9" x2="23" y2="15"></line>
+                    </g>
+                </svg>
+                <span class="tooltip">Включить/Выключить музыку</span>
+            </button>
+            <!-- Кнопка Открыть Модальное окно карты -->
+            <button id="openMapModalBtn" class="nav-action-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span class="tooltip">Построить маршрут</span>
+            </button>
+            <!-- Кнопка Позвонить -->
+            <a href="tel:+79271947505" class="nav-action-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <span class="tooltip">Позвонить нам</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Map Options Modal -->
+    <div class="map-modal" id="mapOptionsModal">
+        <div class="map-modal-content">
+            <button class="map-modal-close-btn" id="closeMapModalBtn">&times;</button>
+            <h3>Выберите пункт назначения:</h3>
+            <div class="map-options-list">
+                <a href="https://yandex.ru/maps/?text=Зубова+Поляна,+Электронная,+70" target="_blank">К Михаилу</a>
+                <a href="https://yandex.ru/maps/?text=Зубова+Поляна,+Пушкина+19" target="_blank">К Ирине</a>
+                <a href="https://yandex.ru/maps/?text=ул.+Новикова-Прибоя,+2,+рабочий+посёлок+Зубова+Поляна" target="_blank">В ЗАГС</a>
+                <!-- ИСПРАВЛЕНА ССЫЛКА НА КАРТУ -->
+                <a href="https://yandex.ru/maps/?ll=42.702303%2C54.121093&z=15" target="_blank">К выездной регистрации</a>
+                <a href="https://yandex.ru/maps/?text=р.п.+Зубова+Поляна,+Почтовый+пер.,+16А" target="_blank">В Кафе "Семейный уголок"</a>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Intersection Observer for animations
-        const animatedElements = document.querySelectorAll('.section, .timeline-item, .color-swatch, .form-group, .calendar-highlight, .names, .hero .date, .section-header, .subtitle, .elegant-divider, .dresscode-note');
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    // observer.unobserve(entry.target); // Раскомментируйте для однократной анимации
-                } else {
-                    // Для повторной анимации при прокрутке вверх/вниз (если убрать unobserve):
-                    // entry.target.classList.remove('is-visible');
-                }
-            });
-        }, { threshold: 0.1 }); // Анимация сработает, когда 10% элемента видно
-
-        animatedElements.forEach(el => observer.observe(el));
-
-        // Countdown Timer
-        // Время изменено на 12:00:00 для правильного отсчета до полудня
-        const countdownDate = new Date("August 15, 2025 12:00:00").getTime();
-        const countdownTimerElement = document.getElementById('countdown-timer');
-        if (countdownTimerElement) {
-            const timerInterval = setInterval(function() {
-                const now = new Date().getTime();
-                const distance = countdownDate - now;
-
-                if (distance < 0) {
-                    clearInterval(timerInterval);
-                    countdownTimerElement.innerHTML = "Этот волшебный день настал!";
-                    return;
-                }
-
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-
-                // Функция для склонения существительных
-                function declensionOfNum(number, titles) {
-                    const cases = [2, 0, 1, 1, 1, 2];
-                    return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
-                }
-
-                const daysText = days + ' ' + declensionOfNum(days, ['день', 'дня', 'дней']);
-                const hoursText = hours + ' ' + declensionOfNum(hours, ['час', 'часа', 'часов']);
-                const minutesText = minutes + ' ' + declensionOfNum(minutes, ['минута', 'минуты', 'минут']);
-
-                countdownTimerElement.innerHTML = `До нашего дня осталось: ${daysText}, ${hoursText}, ${minutesText}`;
-
-            }, 1000);
-        }
-
-
-        // RSVP Form to WhatsApp
-        const rsvpForm = document.getElementById('rsvpForm');
-        if (rsvpForm) {
-            rsvpForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                const guestName = document.getElementById('guest_name').value;
-                const attendance = document.querySelector('input[name="attendance"]:checked').value;
-                const wishes = document.getElementById('wishes').value;
-
-                let message = `Здравствуйте, Михаил и Ирина!\n\nОтвет на ваше свадебное приглашение:\n`;
-                message += `Имя гостя: ${guestName}\n`;
-                message += `Присутствие: ${attendance}\n`;
-                if (wishes) message += `Пожелания: ${wishes}\n`;
-                // Удалено: Спасибо! Мы скоро свяжемся с Вами.
-                // message += `\nСпасибо! Мы скоро свяжемся с Вами.`;
-
-                const whatsappNumber = "79271947505"; // Ваш номер без +
-                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-
-                window.open(whatsappUrl, '_blank');
-                // Убрал алерт, чтобы не дублировать промпт WhatsApp
-                // alert("Спасибо за ваш ответ! Сейчас вы будете перенаправлены в WhatsApp для отправки сообщения.");
-                rsvpForm.reset(); // Очистка формы после отправки
-            });
-        }
-
-        // Music Modal
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- ЛОГИКА ПРЕЛОАДЕРА И АНИМАЦИИ ---
         const musicModal = document.getElementById('musicModal');
         const playMusicBtn = document.getElementById('playMusicBtn');
         const noMusicBtn = document.getElementById('noMusicBtn');
         const backgroundMusic = document.getElementById('backgroundMusic');
+        const preloader = document.getElementById('preloader');
+        const animationContainer = document.getElementById('animationContainer');
+        const mainContent = document.getElementById('main-content');
+        const body = document.body;
+        const heroSection = document.getElementById('hero-section');
+        const scrollIndicator = document.getElementById('scrollIndicator');
 
-        // Показываем модальное окно через небольшую задержку, если оно еще не было показано в этой сессии
+        // Показать музыкальное модальное окно через 0.5 секунды после загрузки DOM
         setTimeout(() => {
-            if (musicModal && !sessionStorage.getItem('musicPromptShown')) {
-                 musicModal.classList.add('is-active');
-                 sessionStorage.setItem('musicPromptShown', 'true'); // Запоминаем, что показали
+            if (musicModal && !sessionStorage.getItem('musicPromptShown')) { // Проверка, что не показывали ранее
+                musicModal.classList.add('is-active');
+                sessionStorage.setItem('musicPromptShown', 'true');
             } else if (musicModal) {
                  musicModal.style.display = 'none'; // Если уже показывали, скрываем сразу
+                 startAnimation(); // Сразу запускаем анимацию, если не нужно показывать модальное окно
             }
-        }, 1200);
+        }, 500);
+        
+        // Функция для создания падающих лепестков
+        const createPetals = () => {
+            const container = document.getElementById('preloader');
+            const petalCount = 25; // Количество лепестков
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                // Случайная позиция по горизонтали
+                petal.style.left = `${Math.random() * 100}vw`;
+                // Случайная задержка для асинхронного падения
+                petal.style.animationDelay = `${Math.random() * 10}s`;
+                // Случайный размер лепестков
+                const randomSize = Math.random() * 0.5 + 0.75;
+                petal.style.transform = `scale(${randomSize})`;
+                container.appendChild(petal);
+            }
+        };
 
+        // Функция запуска анимации
+        const startAnimation = () => {
+            if (musicModal.classList.contains('is-active')) {
+                musicModal.classList.remove('is-active'); // Скрыть модальное окно
+            }
+            animationContainer.classList.add('visible'); // Сделать контейнер анимации видимым
+            
+            createPetals(); // Запустить создание лепестков
+            
+            // Добавить класс для запуска анимации сердца
+            document.getElementById('heartContainer').classList.add('heart-animated');
 
-        if (playMusicBtn && backgroundMusic) {
-            playMusicBtn.addEventListener('click', () => {
-                // Пытаемся воспроизвести музыку
-                backgroundMusic.play().then(() => {
-                    console.log("Музыка успешно воспроизводится");
-                    if (musicModal) musicModal.classList.remove('is-active'); // Скрываем модал, если успешно
-                }).catch(error => {
-                    console.log("Ошибка воспроизведения музыки.", error);
-                    // Убрал алерт об ошибке воспроизведения
-                    // alert("Не удалось включить музыку. Возможно, браузер блокирует автовоспроизведение или есть проблема со ссылкой на файл.");
-                    if (musicModal) musicModal.classList.remove('is-active'); // Все равно скрываем модал при ошибке
-                });
+            // Добавить эффект мерцания к сердцу через 5.7 секунды (относительно начала heart-animated)
+            setTimeout(() => {
+                document.getElementById('heartContainer').classList.add('shimmer-effect');
+            }, 5700);
+
+            const namesText = "Михаил & Ирина";
+            const namesContainer = document.getElementById('animatedNames');
+            let delay = 6.7; // Начальная задержка для первого символа
+
+            // Анимировать каждую букву в именах
+            namesText.split('').forEach(letter => {
+                const span = document.createElement('span');
+                span.textContent = letter === ' ' ? '\u00A0' : letter; // Использовать неразрывный пробел
+                span.style.animationDelay = `${delay}s`;
+                namesContainer.appendChild(span);
+                delay += 0.08; // Увеличивать задержку для каждой последующей буквы
             });
-        }
-        if (noMusicBtn && musicModal) {
-            noMusicBtn.addEventListener('click', () => {
-                musicModal.classList.remove('is-active'); // Просто скрываем модал
-            });
-        }
+            
+            const totalAnimationTime = 12000; // Общее время анимации прелоадера (12 секунд)
 
-        // Particles.js Configuration (фоновая анимация)
-        if (typeof particlesJS !== 'undefined') {
-            particlesJS('particles-js', {
-                "particles": {
-                    "number": {
-                        "value": 50, // Немного меньше частиц
-                        "density": { "enable": true, "value_area": 900 }
-                    },
-                    "color": { "value": "var(--color-secondary)" }, /* Цвет частиц - пастельно-розовый */
-                    "shape": {
-                        "type": "circle",
-                        /* Можно добавить цветочные иконки сюда, если particles.js поддерживает image shape */
-                        /* "image": { "src": "path/to/flower_icon.svg", "width": 100, "height": 100 } */
-                    },
-                    "opacity": {
-                        "value": 0.4, "random": true,
-                        "anim": { "enable": true, "speed": 0.7, "opacity_min": 0.1, "sync": false }
-                    },
-                    "size": {
-                        "value": 3.5, "random": true,
-                        "anim": { "enable": false } // Отключим анимацию размера для более спокойного эффекта
-                    },
-                    "line_linked": { "enable": false }, // Убираем линии
-                    "move": {
-                        "enable": true, "speed": 1.2, "direction": "none", "random": true,
-                        "straight": false, "out_mode": "out", "bounce": false,
-                        "attract": { "enable": false }
+            // Скрыть прелоадер и показать основной контент после завершения анимации
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+                mainContent.style.display = 'block';
+                body.classList.remove('preloading');
+                initMainSiteLogic(); // Инициализировать основную логику сайта
+            }, totalAnimationTime);
+        };
+
+        // Обработчик события для кнопки "Да, с удовольствием"
+        playMusicBtn.addEventListener('click', () => {
+            backgroundMusic.play().catch(error => console.error("Music failed:", error));
+            startAnimation(); // Запустить анимацию
+        });
+
+        // Обработчик события для кнопки "Нет, спасибо"
+        noMusicBtn.addEventListener('click', startAnimation); // Запустить анимацию (без музыки)
+        
+        // --- ЛОГИКА ОСНОВНОГО САЙТА ---
+        const initMainSiteLogic = () => {
+            // Анимация появления секций при прокрутке
+            const animatedElements = document.querySelectorAll('.section, .timeline-item, .elegant-divider');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
                     }
-                },
-                "interactivity": {
-                    "detect_on": "canvas",
-                    "events": { "onhover": { "enable": false }, "onclick": { "enable": false }, "resize": true },
-                },
-                "retina_detect": true
-            });
-        } else {
-            console.log("Библиотека particles.js не загружена.");
-        }
+                });
+            }, { threshold: 0.15 }); // Запускать анимацию, когда 15% элемента видно
+            animatedElements.forEach(el => observer.observe(el));
+            
+            // Логика таймера обратного отсчета
+            // Установка времени на 10:00 15 августа 2025
+            const countdownDate = new Date("August 15, 2025 10:00:00").getTime();
+            const countdownTimerElement = document.getElementById('countdown-timer');
+            if (countdownTimerElement) {
+                const timerInterval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = countdownDate - now;
+                    if (distance < 0) {
+                        clearInterval(timerInterval);
+                        countdownTimerElement.innerHTML = "Этот волшебный день настал!";
+                        return;
+                    }
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    // Функция для склонения числительных
+                    const declensionOfNum = (n, t) => t[(n % 100 > 4 && n % 100 < 20) ? 2 : [2, 0, 1, 1, 1, 2][(n % 10 < 5) ? n % 10 : 5]];
+                    countdownTimerElement.innerHTML = `До нашего дня осталось: ${days} ${declensionOfNum(days,['день','дня','дней'])}, ${hours} ${declensionOfNum(hours,['час','часа','часов'])}, ${minutes} ${declensionOfNum(minutes,['минута','минуты','минут'])}`;
+                }, 1000);
+            }
 
+            // Логика формы подтверждения присутствия (RSVP)
+            const rsvpForm = document.getElementById('rsvpForm');
+            if (rsvpForm) {
+                rsvpForm.addEventListener('submit', (event) => {
+                    event.preventDefault(); // Предотвратить стандартную отправку формы
+                    const guestName = document.getElementById('guest_name').value;
+                    const attendance = document.querySelector('input[name="attendance"]:checked').value;
+                    const wishes = document.getElementById('wishes').value;
+                    let message = `Здравствуйте, Михаил и Ирина!\n\nОтвет на приглашение:\nИмя: ${guestName}\nПрисутствие: ${attendance}\n`;
+                    if (wishes) message += `Пожелания: ${wishes}`;
+                    // Открыть ссылку WhatsApp с предзаполненным сообщением
+                    const whatsappUrl = `https://wa.me/79271947505?text=${encodeURIComponent(message)}`;
+                    window.open(whatsappUrl, '_blank');
+                    rsvpForm.reset(); // Сбросить форму после отправки
+                });
+            }
+
+            // Инициализация Particles.js (если доступен)
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', {
+                    "particles": { "number": { "value": 60, "density": { "enable": true, "value_area": 800 } }, 
+                    "color": { "value": "#E8C7C8" }, // ИСПРАВЛЕНИЕ: Заменен CSS var на hex-код
+                    "shape": { "type": "circle" }, "opacity": { "value": 0.5, "random": true, "anim": { "enable": true, "speed": 0.8, "opacity_min": 0.1, "sync": false } }, "size": { "value": 4, "random": true }, "line_linked": { "enable": false }, "move": { "enable": true, "speed": 1.5, "direction": "none", "random": true, "straight": false, "out_mode": "out", "bounce": false } },
+                    "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": true, "mode": "bubble" }, "onclick": { "enable": false } }, "modes": { "bubble": { "distance": 150, "size": 5, "duration": 2, "opacity": 0.8 } } }, "retina_detect": true
+                });
+            }
+
+            // Logic for scroll indicator
+            if (heroSection && scrollIndicator) {
+                const scrollObserver = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+                            // If the hero section is no longer in view (scrolled past)
+                            scrollIndicator.classList.add('hidden');
+                        } else {
+                            // If the hero section is in view
+                            scrollIndicator.classList.remove('hidden');
+                        }
+                    });
+                }, { threshold: 0.5 }); // Hide when 50% of the hero section is out of view
+
+                scrollObserver.observe(heroSection);
+            }
+
+            // Logic for Map Options Modal
+            const openMapModalBtn = document.getElementById('openMapModalBtn');
+            const mapOptionsModal = document.getElementById('mapOptionsModal');
+            const closeMapModalBtn = document.getElementById('closeMapModalBtn');
+
+            if (openMapModalBtn && mapOptionsModal && closeMapModalBtn) {
+                openMapModalBtn.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent default link behavior
+                    mapOptionsModal.classList.add('is-active');
+                });
+
+                closeMapModalBtn.addEventListener('click', () => {
+                    mapOptionsModal.classList.remove('is-active');
+                });
+
+                // Close modal if clicked outside content
+                mapOptionsModal.addEventListener('click', (e) => {
+                    if (e.target === mapOptionsModal) {
+                        mapOptionsModal.classList.remove('is-active');
+                    }
+                });
+            }
+
+            // --- ИСПРАВЛЕННАЯ ЛОГИКА КНОПКИ МУЗЫКИ ---
+            const musicToggleButton = document.getElementById('musicToggleButton');
+            const iconVolume = document.getElementById('icon-volume');
+            const iconMute = document.getElementById('icon-mute');
+
+            if (musicToggleButton && backgroundMusic && iconVolume && iconMute) {
+                const updateMusicIcon = () => {
+                    if (backgroundMusic.paused) {
+                        iconVolume.style.display = 'none';
+                        iconMute.style.display = 'block';
+                    } else {
+                        iconVolume.style.display = 'block';
+                        iconMute.style.display = 'none';
+                    }
+                };
+                
+                // Слушатели событий для автоматического обновления иконки
+                backgroundMusic.addEventListener('play', updateMusicIcon);
+                backgroundMusic.addEventListener('pause', updateMusicIcon);
+                
+                // Установить начальное состояние иконки после небольшого таймаута
+                setTimeout(updateMusicIcon, 500);
+
+                musicToggleButton.addEventListener('click', () => {
+                    if (backgroundMusic.paused) {
+                        backgroundMusic.play().catch(error => console.error("Music play failed:", error));
+                    } else {
+                        backgroundMusic.pause();
+                    }
+                });
+            }
+        };
     });
     </script>
 </body>

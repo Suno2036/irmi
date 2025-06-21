@@ -558,14 +558,25 @@
         }
 
         @media (max-width: 480px) {
+            /* Изменения для анимации имен в прелоадере */
+            .animated-text { 
+                font-size: 2.2rem; /* Уменьшен размер шрифта для предотвращения переноса слова "Ирина" */
+                white-space: nowrap; /* Гарантируем, что текст не переносится */
+                overflow: hidden; /* Скрыть, если все равно не помещается (крайний случай) */
+                text-overflow: ellipsis; /* Добавить многоточие, если текст обрезан */
+            }
+
             .hero .names { 
-                font-size: 2.8rem;
-                margin-top: -250px;
+                font-size: 3.5rem; /* Увеличен размер шрифта для имен в Hero секции */
+                margin-top: -200px; /* Немного опустим блок имен */
                 margin-bottom: 5px;
+                white-space: nowrap; /* Гарантируем, что текст не переносится */
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             .hero .date { 
                 font-size: 1.2rem;
-                margin-top: 80px;
+                margin-top: 40px; /* Приближаем дату к именам */
             }
             .section-header { font-size: 2.2rem; }
             .subtitle { font-size: 0.9rem; }
@@ -605,6 +616,10 @@
             .thank-you-section .names { 
                 font-size: 2rem;
                 line-height: 1.2;
+            }
+             /* Изменения для индикатора прокрутки */
+            .scroll-indicator {
+                bottom: 70px; /* Поднимаем индикатор вверх */
             }
         }
 
@@ -652,7 +667,7 @@
         /* Media queries for scroll indicator on smaller screens */
         @media (max-width: 480px) {
             .scroll-indicator {
-                bottom: 20px;
+                /* bottom: 20px; -- Already adjusted above */
                 font-size: 0.8rem;
             }
             .scroll-indicator svg {
@@ -1030,6 +1045,7 @@
 
             const namesText = "Михаил & Ирина";
             const namesContainer = document.getElementById('animatedNames');
+            namesContainer.innerHTML = ''; // Очищаем, чтобы избежать дублирования при повторном вызове
             let delay = 6.7; // Начальная задержка для первого символа
 
             // Анимировать каждую букву в именах

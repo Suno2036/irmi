@@ -580,7 +580,7 @@
             }
             .section-header { font-size: 2.2rem; }
             .subtitle { font-size: 0.9rem; }
-            .invitation-text p { font-size: 1rem; }
+            .invitation-text p { font-size: 1.1rem; }
             .calendar-month { font-size: 1.2rem; }
             .calendar-day { font-size: 5rem; }
             .calendar-year-weekday { font-size: 1rem; }
@@ -619,16 +619,17 @@
             }
              /* Изменения для индикатора прокрутки */
             .scroll-indicator {
-                bottom: 70px; /* Поднимаем индикатор вверх */
+                position: relative; /* Изменено на относительное позиционирование */
+                bottom: auto; /* Сброс предыдущего значения */
+                left: auto; /* Сброс предыдущего значения */
+                transform: none; /* Сброс предыдущего значения */
+                margin-top: 50px; /* Добавлено для отступа от даты */
             }
         }
 
         /* Styles for the scroll indicator */
         .scroll-indicator {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+            /* Удалены position: absolute, bottom, left, transform */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -638,6 +639,7 @@
             z-index: 5;
             opacity: 1;
             transition: opacity 0.5s ease-out;
+            margin-top: 50px; /* Добавлено для отступа от даты */
         }
 
         .scroll-indicator.hidden {
@@ -669,6 +671,7 @@
             .scroll-indicator {
                 /* bottom: 20px; -- Already adjusted above */
                 font-size: 0.8rem;
+                margin-top: 30px; /* Уменьшаем отступ на мобильных */
             }
             .scroll-indicator svg {
                 width: 25px;
@@ -718,15 +721,15 @@
                     <div class="section-content">
                         <h1 class="names">Михаил<br>&amp;<br>Ирина</h1>
                         <div class="date">15 августа 2025</div>
+                        <!-- Scroll Down Indicator ПЕРЕМЕЩЕН ВНУТРЬ section-content -->
+                        <div class="scroll-indicator" id="scrollIndicator">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
+                            </svg>
+                            <span>Листайте вниз</span>
+                        </div>
                     </div>
-                </div>
-                <!-- Scroll Down Indicator -->
-                <div class="scroll-indicator" id="scrollIndicator">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <polyline points="19 12 12 19 5 12"></polyline>
-                    </svg>
-                    <span>Листайте вниз</span>
                 </div>
             </section>
             <section class="section invitation-section">
@@ -1140,18 +1143,19 @@
             }
 
             // Logic for scroll indicator
+            // Логика для индикатора прокрутки теперь будет учитывать его новое позиционирование
             if (heroSection && scrollIndicator) {
                 const scrollObserver = new IntersectionObserver(entries => {
                     entries.forEach(entry => {
                         if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
-                            // If the hero section is no longer in view (scrolled past)
+                            // Если hero-секция вышла из видимости (прокручена)
                             scrollIndicator.classList.add('hidden');
                         } else {
-                            // If the hero section is in view
+                            // Если hero-секция в видимости
                             scrollIndicator.classList.remove('hidden');
                         }
                     });
-                }, { threshold: 0.5 }); // Hide when 50% of the hero section is out of view
+                }, { threshold: 0.5 }); // Скрыть, когда 50% hero-секции выходит из видимости
 
                 scrollObserver.observe(heroSection);
             }
